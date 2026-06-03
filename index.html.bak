@@ -25,7 +25,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-
 .ring-center .weight{font-size:22px;font-weight:800}
 .ring-center .unit{font-size:11px;opacity:.7}
 .tabs{display:flex;gap:0;margin:-8px 16px 16px;position:relative;z-index:2;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
-.tabs button{flex:1;padding:14px 8px;border:none;background:transparent;font-size:16px;font-weight:600;color:#999;cursor:pointer;transition:.2s;position:relative}
+.tabs button{flex:1;padding:12px;border:none;background:transparent;font-size:14px;font-weight:600;color:#999;cursor:pointer;transition:.2s;position:relative}
 .tabs button.active{color:var(--pink)}
 .tabs button.active::after{content:'';position:absolute;bottom:0;left:20%;right:20%;height:3px;background:var(--pink);border-radius:3px 3px 0 0}
 .section{display:none;padding:0 16px 80px;max-width:800px;margin:0 auto}
@@ -39,49 +39,46 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-
 .cal-nav button{background:none;border:none;font-size:20px;cursor:pointer;padding:4px 8px;color:var(--dark)}
 .cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:11px;color:#999;margin-bottom:4px}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
-.cal-grid{gap:5px}
-.cal-day{border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;font-size:13px;font-weight:500;cursor:pointer;position:relative;transition:.15s;background:#fff;border:2px solid #eee;min-height:88px;padding:4px 2px}
+.cal-day{border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;font-size:12px;font-weight:500;cursor:pointer;position:relative;transition:.15s;background:#fff;border:1px solid #eee;min-height:72px;padding:3px}
 .cal-day:hover{border-color:var(--pink)}
-.cal-day:active{transform:scale(.95)}
 .cal-day.other-month{opacity:.25}
 .cal-day.today{border-color:var(--pink);background:var(--pink-light)}
 .cal-day.date-mark{box-shadow:inset 0 0 0 2px var(--orange)}
 .cal-day.has-record{background:var(--green-light)}
-.cal-day .day-num{font-size:14px;font-weight:800;align-self:flex-start;padding:1px 0 0 2px}
-.cal-day .cal-data{font-size:10px;color:#555;line-height:1.4;margin-top:2px;text-align:center;width:100%;letter-spacing:-0.3px}
-.cal-day .cal-data .w{font-weight:700;font-size:12px}
+.cal-day .day-num{font-size:12px;font-weight:700;align-self:flex-start}
+.cal-day .cal-data{font-size:9px;color:#666;line-height:1.3;margin-top:1px;text-align:center;width:100%}
+.cal-day .cal-data .w{font-weight:700;font-size:11px}
 .cal-day .cal-data .gd{color:var(--green)}
 .cal-day .cal-data .rd{color:var(--red)}
 .cal-day .cal-data .org{color:var(--orange)}
-.cal-day .heart{position:absolute;bottom:2px;left:2px;font-size:8px}
+.cal-day .heart{position:absolute;bottom:2px;left:2px;font-size:7px}
 
 /* Day Modal */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;overflow-y:auto}
 .modal-overlay.show{display:block}
-.modal{background:#fff;border-radius:var(--radius)var(--radius)0 0;margin-top:50px;min-height:calc(100vh - 50px);padding:24px 20px 40px;max-width:600px;margin-left:auto;margin-right:auto}
-.modal-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;font-size:20px;font-weight:700}
+.modal{background:#fff;border-radius:var(--radius)var(--radius)0 0;margin-top:50px;min-height:calc(100vh - 50px);padding:20px;max-width:600px;margin-left:auto;margin-right:auto}
+.modal-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;font-size:18px;font-weight:700}
 .modal-close{background:none;border:none;font-size:24px;cursor:pointer;color:#999;padding:4px}
-.form-group{margin-bottom:18px}
-.form-group label{display:block;font-size:15px;font-weight:600;margin-bottom:6px;color:#555}
-.form-group input,.form-group select,.form-group textarea{width:100%;padding:12px 14px;border:1px solid #ddd;border-radius:12px;font-size:16px;outline:none;transition:.2s}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:13px;font-weight:600;margin-bottom:4px;color:#666}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:10px;font-size:14px;outline:none;transition:.2s}
 .form-group input:focus{border-color:var(--pink)}
-.form-group textarea{font-size:15px}
 .meal-section{margin-bottom:14px}
 .meal-section h4{font-size:14px;margin-bottom:6px;color:var(--dark)}
-.meal-item{display:flex;gap:6px;align-items:center;margin-bottom:8px;min-height:44px}
-.meal-item .qty-input{width:56px;flex:none;text-align:center;font-size:16px;padding:10px 4px}
+.meal-item{display:flex;gap:4px;align-items:center;margin-bottom:4px}
+.meal-item .qty-input{width:52px;flex:none;text-align:center}
 .meal-item .food-input{flex:1;position:relative}
-.meal-item .food-input input{width:100%;font-size:16px;padding:10px 10px}
-.meal-item .cal-input{width:74px;flex:none;font-size:16px;padding:10px 6px}
-.meal-item .del-btn{background:none;border:none;color:var(--red);cursor:pointer;font-size:22px;padding:8px;flex:none;min-width:40px;text-align:center}
-.add-food-btn{background:none;border:1px dashed #ccc;border-radius:10px;padding:10px;width:100%;color:#999;cursor:pointer;font-size:14px;transition:.2s;margin-top:2px}
+.meal-item .food-input input{width:100%}
+.meal-item .cal-input{width:68px;flex:none}
+.meal-item .del-btn{background:none;border:none;color:var(--red);cursor:pointer;font-size:18px;padding:4px;flex:none}
+.add-food-btn{background:none;border:1px dashed #ccc;border-radius:8px;padding:5px;width:100%;color:#999;cursor:pointer;font-size:12px;transition:.2s}
 .add-food-btn:hover{border-color:var(--pink);color:var(--pink)}
 .meal-total{text-align:right;font-size:12px;color:#666;margin-top:2px}
 .meal-total strong{color:var(--dark)}
-.quick-foods{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
-.quick-foods button{padding:6px 12px;border:1px solid #ddd;border-radius:14px;background:#fff;font-size:13px;cursor:pointer;transition:.15s}
-.quick-foods button:hover{border-color:var(--pink);color:var(--pink);background:var(--pink-light)}
-.btn-save{width:100%;padding:16px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--pink),var(--orange));color:#fff;font-size:18px;font-weight:700;cursor:pointer;margin-top:16px;transition:.2s;letter-spacing:1px}
+.quick-foods{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}
+.quick-foods button{padding:3px 8px;border:1px solid #eee;border-radius:12px;background:#fff;font-size:11px;cursor:pointer;transition:.15s}
+.quick-foods button:hover{border-color:var(--pink);color:var(--pink)}
+.btn-save{width:100%;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--pink),var(--orange));color:#fff;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px;transition:.2s}
 .btn-save:active{transform:scale(.97)}
 .btn-save:disabled{opacity:.5;cursor:not-allowed}
 
@@ -113,11 +110,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-
 .snack-alert{background:#fff3cd;border:1px solid #ffc107;border-radius:10px;padding:10px;margin:10px 0;display:none}
 .snack-alert.show{display:block}
 
-.workout-item{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap;min-height:48px}
-.workout-item select{flex:1;min-width:90px;padding:10px;border:1px solid #ddd;border-radius:10px;font-size:15px}
-.workout-item input[type=number]{width:60px;flex:none;padding:10px;font-size:16px;border:1px solid #ddd;border-radius:10px;text-align:center}
-.workout-item .del-btn{background:none;border:none;color:var(--red);cursor:pointer;font-size:22px;padding:8px;flex:none;min-width:40px}
-.workout-item .burn-label{font-size:13px;color:#999;flex:none;min-width:60px;font-weight:600}
+.workout-item{display:flex;gap:6px;align-items:center;margin-bottom:5px;flex-wrap:wrap}
+.workout-item select{flex:1;min-width:80px;padding:8px;border:1px solid #ddd;border-radius:8px;font-size:13px}
+.workout-item input[type=number]{width:56px;flex:none}
+.workout-item .del-btn{background:none;border:none;color:var(--red);cursor:pointer;font-size:18px;padding:4px;flex:none}
+.workout-item .burn-label{font-size:11px;color:#999;flex:none;min-width:50px}
 .workout-summary{display:flex;gap:10px;margin:8px 0;flex-wrap:wrap}
 .workout-summary .badge{padding:4px 12px;border-radius:16px;font-size:12px;font-weight:600}
 .badge-cardio{background:#e3f2fd;color:#1565c0}
@@ -142,15 +139,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-
 .deficit-display .total-row .val{font-size:18px}
 
 @media(min-width:640px){
-.cal-day{min-height:90px;padding:5px}
-.cal-day .cal-data{font-size:11px;line-height:1.5}
-.cal-day .day-num{font-size:15px}
-.cal-grid{gap:6px}
+.cal-day{min-height:82px;padding:4px}
+.cal-day .cal-data{font-size:10px}
 .banner{padding:32px 40px 40px}
 .banner h1{font-size:24px}
 .modal{margin-top:80px;min-height:auto;border-radius:var(--radius);margin-bottom:40px}
-.meal-item{min-height:48px}
-.meal-item .food-input input,.meal-item .cal-input,.meal-item .qty-input{padding:8px 10px;font-size:14px}
 }
 </style>
 </head>
@@ -264,28 +257,7 @@ let SETTINGS={height:170,age:33,activityFactor:1.375,targetWeight:125};
 
 // Food DB
 const FOOD_DB={
-// === 面包/主食类 ===
-'恰巴塔(1个)':250,'欧包(1个)':200,'全麦欧包(1片)':90,'法棍(10cm)':150,'吐司(1片)':130,'贝果(1个)':250,'可颂(1个)':300,'肉桂卷(1个)':350,'黑麦馒头(1个)':200,'全麦馒头(1个)':180,'白馒头(1个)':220,'杂粮馒头(1个)':200,'花卷(1个)':200,'窝窝头(1个)':150,'发糕(1块)':180,'大饼(1张)':250,
-// === 蛋奶早餐 ===
-'白煮蛋(1个)':70,'煎蛋(1个)':90,'茶叶蛋(1个)':80,'包子(1个)':180,'油条(1根)':270,'豆浆(1杯)':120,'牛奶(1杯)':150,'酸奶(1杯)':130,'燕麦奶(1杯)':120,'小米粥(1碗)':100,'白粥(1碗)':80,'燕麦片(1碗)':150,'全麦面包(1片)':80,'玉米(1根)':150,'红薯(1个)':120,'紫薯(1个)':130,'山药(1段)':80,'南瓜(1碗)':60,'小笼包(4个)':200,'煎饼果子(1个)':350,'馄饨(1碗)':250,'饺子(5个)':250,'烧麦(3个)':250,
-// === 米饭面食 ===
-'米饭(1碗)':200,'糙米饭(1碗)':180,'杂粮饭(1碗)':190,'藜麦饭(1碗)':200,'面条(1碗)':250,'炒面(1盘)':400,'意面(1份)':350,'炒饭(1盘)':400,'蛋炒饭(1盘)':380,'扬州炒饭(1盘)':420,'米线(1碗)':300,'螺蛳粉(1碗)':500,'凉皮(1份)':250,'冷面(1碗)':300,'热干面(1碗)':400,'炸酱面(1碗)':350,'酸辣粉(1碗)':350,
-// === 中式热菜 ===
-'番茄炒蛋(1份)':150,'炒青菜(1份)':80,'清炒西兰花(1份)':90,'蒜蓉西兰花(1份)':100,'鱼香肉丝(1份)':250,'宫保鸡丁(1份)':300,'麻婆豆腐(1份)':200,'红烧肉(1份)':400,'红烧排骨(1份)':400,'糖醋排骨(1份)':350,'糖醋里脊(1份)':380,'回锅肉(1份)':380,'东坡肉(1份)':500,'清蒸鱼(1块)':150,'水煮鱼(1份)':350,'酸菜鱼(1份)':300,'烤鱼(1份)':450,'白灼虾(10只)':100,'油焖大虾(1份)':250,'蒜蓉虾(1份)':200,'炒肉丝(1份)':200,'青椒炒肉(1份)':220,'土豆丝(1份)':150,'醋溜白菜(1份)':70,'手撕包菜(1份)':100,'地三鲜(1份)':250,'干煸四季豆(1份)':200,'红烧茄子(1份)':200,'鱼香茄子(1份)':250,'凉拌黄瓜(1份)':50,'拍黄瓜(1份)':60,'皮蛋豆腐(1份)':120,'口水鸡(1份)':300,'白切鸡(1份)':250,'烤鸭(1份)':350,'叉烧(1份)':300,'红烧牛腩(1份)':350,'水煮牛肉(1份)':400,'小炒肉(1份)':320,'梅菜扣肉(1份)':450,
-// === 汤类 ===
-'紫菜蛋花汤(1碗)':60,'番茄蛋汤(1碗)':70,'排骨汤(1碗)':200,'鸡汤(1碗)':180,'冬瓜汤(1碗)':40,'味噌汤(1碗)':50,'酸辣汤(1碗)':120,'罗宋汤(1碗)':150,
-// === 西餐/日韩 ===
-'三明治(1个)':350,'汉堡(1个)':500,'热狗(1个)':300,'披萨(1片)':300,'沙拉(1份)':150,'凯撒沙拉(1份)':250,'意式肉酱面(1份)':400,'牛排(1块)':400,'三文鱼排(1份)':300,'金枪鱼沙拉(1份)':200,'寿司(6个)':300,'三文鱼刺身(6片)':200,'日式拉面(1碗)':450,'乌冬面(1碗)':300,'韩式拌饭(1份)':450,'部队锅(1份)':600,'泡菜(1份)':30,'纳豆(1盒)':100,'味噌拉面(1碗)':400,
-// === 蛋白质 ===
-'鸡胸肉(1块)':150,'鸡腿(1个)':200,'牛肉(1份)':200,'羊肉(1份)':250,'猪排(1块)':300,'豆腐(1块)':100,'豆腐干(1块)':80,'三文鱼(1份)':200,'虾仁(10只)':80,'金枪鱼(1罐)':150,'午餐肉(2片)':180,'火腿(2片)':100,
-// === 零食 ===
-'蛋糕(1块)':300,'奶茶(1杯)':350,'奶绿(1杯)':250,'水果茶(1杯)':200,'冰淇淋(1个)':200,'巧克力(1块)':100,'饼干(5片)':200,'薯片(1包)':350,'辣条(1包)':250,'面包(1个)':250,'肉松面包(1个)':350,'奶油面包(1个)':400,'布丁(1个)':150,'爆米花(1份)':300,'锅巴(1包)':280,'玉米泡(1包)':200,'坚果(一小把)':150,'瓜子(一把)':80,'花生(一把)':100,'腰果(一把)':150,
-// === 水果 ===
-'水果(1个苹果)':80,'香蕉(1根)':100,'橙子(1个)':70,'葡萄(1串)':100,'西瓜(1块)':80,'草莓(10颗)':50,'蓝莓(1盒)':80,'火龙果(1个)':120,'牛油果(半个)':120,'芒果(1个)':150,'榴莲(1块)':200,'猕猴桃(1个)':50,'桃子(1个)':60,'梨(1个)':80,'菠萝(1块)':60,
-// === 饮品 ===
-'美式咖啡(1杯)':15,'拿铁(1杯)':180,'卡布奇诺(1杯)':150,'摩卡(1杯)':300,'冰美式(1杯)':15,'气泡水(1瓶)':0,'可乐(1罐)':140,'雪碧(1罐)':140,'果汁(1杯)':120,'椰子水(1杯)':60,'抹茶拿铁(1杯)':200,
-// === 火锅/聚餐 ===
-'火锅(1人份)':800,'麻辣烫(1碗)':400,'串串(10串)':350,'烧烤(10串)':400,'关东煮(5串)':150,'毛血旺(1份)':500,'冒菜(1份)':400
+'白煮蛋(1个)':70,'煎蛋(1个)':90,'茶叶蛋(1个)':80,'包子(1个)':180,'馒头(1个)':220,'花卷(1个)':200,'油条(1根)':270,'豆浆(1杯)':120,'牛奶(1杯)':150,'酸奶(1杯)':130,'小米粥(1碗)':100,'白粥(1碗)':80,'燕麦片(1碗)':150,'全麦面包(1片)':80,'玉米(1根)':150,'红薯(1个)':120,'小笼包(4个)':200,'煎饼果子(1个)':350,'馄饨(1碗)':250,'米饭(1碗)':200,'糙米饭(1碗)':180,'面条(1碗)':250,'炒饭(1盘)':400,'番茄炒蛋(1份)':150,'炒青菜(1份)':80,'清炒西兰花(1份)':90,'鱼香肉丝(1份)':250,'宫保鸡丁(1份)':300,'麻婆豆腐(1份)':200,'红烧肉(1份)':400,'糖醋排骨(1份)':350,'回锅肉(1份)':380,'清蒸鱼(1块)':150,'水煮鱼(1份)':350,'酸菜鱼(1份)':300,'白灼虾(10只)':100,'油焖大虾(1份)':250,'炒肉丝(1份)':200,'青椒炒肉(1份)':220,'土豆丝(1份)':150,'醋溜白菜(1份)':70,'地三鲜(1份)':250,'干煸四季豆(1份)':200,'红烧茄子(1份)':200,'凉拌黄瓜(1份)':50,'紫菜蛋花汤(1碗)':60,'番茄蛋汤(1碗)':70,'排骨汤(1碗)':200,'蛋糕(1块)':300,'奶茶(1杯)':350,'冰淇淋(1个)':200,'巧克力(1块)':100,'饼干(5片)':200,'薯片(1包)':350,'辣条(1包)':250,'面包(1个)':250,'布丁(1个)':150,'爆米花(1份)':300,'锅巴(1包)':280,'玉米泡(1包)':200,'坚果(一小把)':150,'水果(1个苹果)':80,'香蕉(1根)':100,'鸡胸肉(1块)':150,'牛肉(1份)':200,'豆腐(1块)':100,'三文鱼(1份)':200
 };
 const SNACK_TRIGGERS=['蛋糕','奶茶','冰淇淋','巧克力','薯片','辣条','饼干','玉米泡','锅巴','爆米花'];
 
