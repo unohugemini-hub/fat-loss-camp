@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🦞 虾虾子减肥夏令营</title>
+<style>
+  :root {
+    --pink: #ff6b8a;
+    --pink-light: #fff0f3;
+    --orange: #ff8c42;
+    --green: #2ec4b6;
+    --green-light: #e8f8f6;
+    --red: #e74c3c;
+    --gray: #f5f5f5;
+    --dark: #2d2d2d;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    --radius: 16px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+    background: #fafafa;
+    color: var(--dark);
+    min-height: 100vh;
+  }
+  .banner {
+    background: linear-gradient(135deg, var(--pink), var(--orange));
+    color: #fff;
+    padding: 24px 20px 32px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .banner::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: 0; right: 0;
+    height: 40px;
+    background: #fafafa;
+    border-radius: 50% 50% 0 0;
+  }
+  .banner h1 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+  .banner .sub { font-size: 13px; opacity: .85; margin-bottom: 16px; }
+  .countdown-wrap { display: flex; align-items: center; justify-content: center; gap: 24px; flex-wrap: wrap; }
+  .countdown-box {
+    background: rgba(255,255,255,.2); border-radius: 12px; padding: 8px 16px;
+    backdrop-filter: blur(4px);
+  }
+  .countdown-box .num { font-size: 28px; font-weight: 800; line-height: 1.2; }
+  .countdown-box .label { font-size: 11px; opacity: .8; }
+  .ring-wrap { position: relative; width: 100px; height: 100px; flex-shrink:0; }
+  .ring-wrap svg { transform: rotate(-90deg); width: 100px; height: 100px; }
+  .ring-bg { fill:none; stroke:rgba(255,255,255,.25); stroke-width:8; }
+  .ring-fg { fill:none; stroke:#fff; stroke-width:8; stroke-linecap:round; transition: stroke-dashoffset .6s ease; }
+  .ring-center { position: absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; }
+  .ring-center .weight { font-size: 22px; font-weight: 800; }
+  .ring-center .unit { font-size: 11px; opacity: .7; }
+
+  .tabs {
+    display: flex; gap:0; margin: -8px 16px 16px; position:relative; z-index:2;
+    background:#fff; border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden;
+  }
+  .tabs button {
+    flex:1; padding:12px; border:none; background:transparent; font-size:14px; font-weight:600;
+    color:#999; cursor:pointer; transition:.2s;
+  }
+  .tabs button.active { color:var(--pink); }
+  .tabs button.active::after {
+    content:''; position:absolute; bottom:0; left:20%; right:20%; height:3px;
+    background:var(--pink); border-radius:3px 3px 0 0;
+  }
+  .section { display:none; padding:0 16px 80px; max-width:800px; margin:0 auto; }
+  .section.active { display:block; }
+  .cal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+  .cal-header h2 { font-size:18px; }
+  .cal-nav { display:flex; gap:12px; }
+  .cal-nav button { background:none; border:none; font-size:20px; cursor:pointer; padding:4px 8px; color:var(--dark); }
+  .cal-weekdays { display:grid; grid-template-columns:repeat(7,1fr); text-align:center; font-size:12px; color:#999; margin-bottom:4px; }
+  .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+  .cal-day {
+    aspect-ratio:1; border-radius:10px; display:flex; flex-direction:column; align-items:center;
+    justify-content:center; font-size:13px; font-weight:500; cursor:pointer; position:relative;
+    transition:.15s; background:#fff; border:1px solid #eee; min-height:52px;
+  }
+  .cal-day:hover { border-color:var(--pink); }
+  .cal-day.other-month { opacity:.3; }
+  .cal-day.today { border-color:var(--pink); background:var(--pink-light); }
+  .cal-day.date-mark { box-shadow: inset 0 0 0 2px var(--orange); }
+  .cal-day.has-record { background:var(--green-light); }
+  .cal-day .dot { position:absolute; top:3px; right:3px; width:6px; height:6px; border-radius:50%; }
+  .cal-day .dot.green { background:var(--green); }
+  .cal-day .dot.red { background:var(--red); }
+  .cal-day .day-num { font-size:13px; font-weight:600; }
+  .cal-day .day-weight { font-size:9px; color:#999; margin-top:1px; }
+
+  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:100; overflow-y:auto; }
+  .modal-overlay.show { display:block; }
+  .modal {
+    background:#fff; border-radius:var(--radius) var(--radius) 0 0; margin-top:60px;
+    min-height:calc(100vh - 60px); padding:20px; max-width:600px; margin-left:auto; margin-right:auto;
+  }
+  .modal-title { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; font-size:18px; font-weight:700; }
+  .modal-close { background:none; border:none; font-size:24px; cursor:pointer; color:#999; padding:4px; }
+  .form-group { margin-bottom:16px; }
+  .form-group label { display:block; font-size:13px; font-weight:600; margin-bottom:6px; color:#666; }
+  .form-group input, .form-group select, .form-group textarea {
+    width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:10px;
+    font-size:14px; outline:none; transition:.2s;
+  }
+  .form-group input:focus { border-color:var(--pink); }
+  .meal-section { margin-bottom:16px; }
+  .meal-section h4 { font-size:14px; margin-bottom:8px; color:var(--dark); }
+  .meal-item { display:flex; gap:8px; align-items:center; margin-bottom:6px; }
+  .meal-item input { flex:1; }
+  .meal-item .cal-input { width:72px; flex:none; }
+  .meal-item .del-btn { background:none; border:none; color:var(--red); cursor:pointer; font-size:18px; padding:4px; }
+  .add-food-btn {
+    background:none; border:1px dashed #ccc; border-radius:8px; padding:6px; width:100%;
+    color:#999; cursor:pointer; font-size:13px; transition:.2s;
+  }
+  .add-food-btn:hover { border-color:var(--pink); color:var(--pink); }
+  .meal-total { text-align:right; font-size:13px; color:#666; margin-top:4px; }
+  .meal-total strong { color:var(--dark); }
+  .quick-foods { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0; }
+  .quick-foods button {
+    padding:4px 10px; border:1px solid #eee; border-radius:14px; background:#fff;
+    font-size:12px; cursor:pointer; transition:.15s;
+  }
+  .quick-foods button:hover { border-color:var(--pink); color:var(--pink); }
+  .btn-save {
+    width:100%; padding:14px; border:none; border-radius:12px;
+    background:linear-gradient(135deg, var(--pink), var(--orange));
+    color:#fff; font-size:16px; font-weight:700; cursor:pointer; margin-top:12px; transition:.2s;
+  }
+  .btn-save:active { transform:scale(.97); }
+  .btn-save:disabled { opacity:.5; cursor:not-allowed; }
+
+  .coach-card {
+    background:linear-gradient(135deg,#2d2d2d,#1a1a2e); color:#fff; border-radius:var(--radius);
+    padding:20px; margin-bottom:16px; position:relative; overflow:hidden;
+  }
+  .coach-card::before { content:'💪'; position:absolute; right:16px; bottom:16px; font-size:48px; opacity:.15; }
+  .coach-card .title { font-size:14px; opacity:.7; margin-bottom:8px; }
+  .coach-card .msg { font-size:16px; line-height:1.6; font-weight:500; }
+
+  .stat-card { background:#fff; border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); margin-bottom:12px; }
+  .stat-card h3 { font-size:15px; margin-bottom:12px; }
+  .stat-row { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #f0f0f0; font-size:14px; }
+  .stat-row:last-child { border-bottom:none; }
+  .stat-row .label { color:#666; }
+  .stat-row .value { font-weight:600; }
+
+  .snack-alert {
+    background:#fff3cd; border:1px solid #ffc107; border-radius:10px; padding:12px; margin:12px 0;
+    display:none; animation:shake .4s ease;
+  }
+  .snack-alert.show { display:block; }
+  @keyframes shake {
+    0%,100% { transform:translateX(0); }
+    25% { transform:translateX(-6px); }
+    75% { transform:translateX(6px); }
+  }
+
+  .workout-item { display:flex; gap:8px; align-items:center; margin-bottom:6px; }
+  .workout-item select { flex:1; padding:8px; border:1px solid #ddd; border-radius:8px; font-size:13px; }
+  .workout-item input[type=number] { width:64px; flex:none; }
+  .workout-item .del-btn { background:none; border:none; color:var(--red); cursor:pointer; font-size:18px; padding:4px; }
+  .workout-summary { display:flex; gap:12px; margin:12px 0; }
+  .workout-summary .badge { padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600; }
+  .badge-cardio { background:#e3f2fd; color:#1565c0; }
+  .badge-strength { background:#fce4ec; color:#c62828; }
+
+  .warning-bar {
+    background:#ffe0e0; border:1px solid var(--red); border-radius:10px; padding:10px 14px;
+    margin:8px 0; display:none; font-size:13px; color:var(--red); font-weight:500;
+  }
+  .warning-bar.show { display:block; }
+
+  .loading { text-align:center; padding:40px; color:#999; font-size:14px; }
+
+  @media (min-width:640px) {
+    .cal-day { min-height:72px; }
+    .banner { padding:32px 40px 40px; }
+    .banner h1 { font-size:24px; }
+    .modal { margin-top:80px; min-height:auto; border-radius:var(--radius); margin-bottom:40px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="banner">
+  <h1>🔥 虾虾子减肥夏令营</h1>
+  <div class="sub">教官小S正在盯着你 👀</div>
+  <div class="countdown-wrap">
+    <div class="ring-wrap">
+      <svg viewBox="0 0 100 100">
+        <circle class="ring-bg" cx="50" cy="50" r="40"/>
+        <circle class="ring-fg" id="progressRing" cx="50" cy="50" r="40"/>
+      </svg>
+      <div class="ring-center">
+        <div class="weight" id="currentWeight">133.6</div>
+        <div class="unit">斤</div>
+      </div>
+    </div>
+    <div class="countdown-box">
+      <div class="num" id="countdownNum">--</div>
+      <div class="label">距离目标还有</div>
+      <div class="label" style="font-size:10px;">7月15日 → 125斤</div>
+    </div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="active" data-tab="calendar">📅 日历</button>
+  <button data-tab="stats">📊 统计</button>
+  <button data-tab="coach">👩‍🏫 教官</button>
+</div>
+
+<div class="section active" id="tab-calendar">
+  <div class="loading" id="calLoading">加载中...</div>
+  <div id="calContent" style="display:none;">
+    <div class="cal-header">
+      <h2 id="calMonthTitle">2026年6月</h2>
+      <div class="cal-nav">
+        <button onclick="changeMonth(-1)">◀</button>
+        <button onclick="changeMonth(1)">▶</button>
+      </div>
+    </div>
+    <div class="cal-weekdays"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div>
+    <div class="cal-grid" id="calGrid"></div>
+  </div>
+</div>
+
+<div class="section" id="tab-stats">
+  <div class="loading" id="statsLoading">加载中...</div>
+  <div id="statsContent" style="display:none;">
+    <div class="stat-card">
+      <h3>📉 减脂进度</h3>
+      <div class="stat-row"><span class="label">起始体重</span><span class="value">133.6 斤</span></div>
+      <div class="stat-row"><span class="label">当前体重</span><span class="value" id="statCurrentWeight">--</span></div>
+      <div class="stat-row"><span class="label">目标体重</span><span class="value">125 斤</span></div>
+      <div class="stat-row"><span class="label">已减</span><span class="value" style="color:var(--green)" id="statLost">--</span></div>
+      <div class="stat-row"><span class="label">还需减</span><span class="value" style="color:var(--orange)" id="statRemain">--</span></div>
+    </div>
+    <div class="stat-card">
+      <h3>🏃 运动总览</h3>
+      <div class="stat-row"><span class="label">有氧总次数</span><span class="value" id="statCardio">0</span></div>
+      <div class="stat-row"><span class="label">无氧总次数</span><span class="value" id="statStrength">0</span></div>
+      <div class="stat-row"><span class="label">运动总天数</span><span class="value" id="statWorkoutDays">0</span></div>
+    </div>
+    <div class="stat-card"><h3>📋 本周趋势</h3><div id="weekTrend">暂无数据</div></div>
+  </div>
+</div>
+
+<div class="section" id="tab-coach">
+  <div class="loading" id="coachLoading">加载中...</div>
+  <div id="coachContent" style="display:none;">
+    <div class="coach-card" id="coachCard">
+      <div class="title">👩‍🏫 教官小S有话说</div>
+      <div class="msg" id="coachMsg">还没有记录呢！你是来夏令营度假的吗？快去记录今天的体重和饮食！</div>
+    </div>
+    <div class="coach-card" style="background:linear-gradient(135deg,#2d2d2d,#3d1a2e);">
+      <div class="title">💬 最近评语</div>
+      <div id="coachHistory" style="font-size:14px;line-height:1.8;">
+        <div style="color:#999;">还没有评语，快去打卡！</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="dayModal">
+  <div class="modal">
+    <div class="modal-title">
+      <span id="modalDateTitle"></span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="form-group">
+      <label>⚖️ 今日体重（斤）</label>
+      <input type="number" step="0.1" id="inputWeight" placeholder="例：133.6">
+    </div>
+    <div class="warning-bar" id="weightWarning">⚠️ 连续两天体重没下降了！你在搞什么飞机！</div>
+
+    <div class="meal-section">
+      <h4>🍽️ 今天吃了什么？</h4>
+      <div id="mealContainer">
+        <div style="margin-bottom:12px;">
+          <label style="font-size:13px;font-weight:600;color:#666;display:block;margin-bottom:6px;">🌅 早餐</label>
+          <div id="breakfastItems"></div>
+          <button class="add-food-btn" onclick="addFoodItem('breakfast')">+ 添加食物</button>
+          <div class="meal-total">小计：<strong id="breakfastCal">0</strong> 卡</div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:13px;font-weight:600;color:#666;display:block;margin-bottom:6px;">☀️ 午餐</label>
+          <div id="lunchItems"></div>
+          <button class="add-food-btn" onclick="addFoodItem('lunch')">+ 添加食物</button>
+          <div class="meal-total">小计：<strong id="lunchCal">0</strong> 卡</div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:13px;font-weight:600;color:#666;display:block;margin-bottom:6px;">🌙 晚餐</label>
+          <div id="dinnerItems"></div>
+          <button class="add-food-btn" onclick="addFoodItem('dinner')">+ 添加食物</button>
+          <div class="meal-total">小计：<strong id="dinnerCal">0</strong> 卡</div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:13px;font-weight:600;color:#666;display:block;margin-bottom:6px;">🍿 零食/加餐</label>
+          <div id="snackItems"></div>
+          <button class="add-food-btn" onclick="addFoodItem('snack')">+ 添加零食</button>
+          <div class="meal-total">小计：<strong id="snackCal">0</strong> 卡</div>
+        </div>
+      </div>
+      <div class="meal-total" style="font-size:15px;margin-top:8px;">今日总摄入：<strong id="totalCalories">0</strong> 卡</div>
+    </div>
+
+    <div class="snack-alert" id="snackAlert">
+      <span style="font-size:24px;margin-right:8px;">😤</span> <span id="snackAlertMsg">今天怎么乱吃啦？！</span>
+    </div>
+
+    <div style="margin-bottom:16px;">
+      <details style="font-size:13px;color:#666;">
+        <summary style="cursor:pointer;font-weight:600;">📖 常见食物热量参考（中式餐饮估算）</summary>
+        <div style="margin-top:8px;max-height:200px;overflow-y:auto;">
+          <div class="quick-foods" id="quickFoods"></div>
+          <p style="font-size:11px;color:#999;margin-top:6px;">💡 炒菜类按"一盘普通份量"估算，实际因用油量而异</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="form-group">
+      <label>🏋️ 今日运动</label>
+      <div id="workoutContainer"></div>
+      <button class="add-food-btn" onclick="addWorkoutItem()" style="margin-top:6px;">+ 添加运动</button>
+      <div class="workout-summary" id="workoutSummary" style="margin-top:8px;display:none;">
+        <span class="badge badge-cardio">有氧: <span id="woCardioCount">0</span> 次</span>
+        <span class="badge badge-strength">无氧: <span id="woStrengthCount">0</span> 次</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>📝 今日心情/备注</label>
+      <textarea id="inputNote" rows="2" placeholder="随便写点什么..." style="resize:vertical;"></textarea>
+    </div>
+
+    <button class="btn-save" id="btnSave" onclick="saveDayRecord()">💾 保存记录</button>
+  </div>
+</div>
+
+<script>
+// ===== 配置 =====
+const API_BASE = '/api';
+const START_DATE = '2026-06-03';
+const END_DATE = '2026-07-15';
+const START_WEIGHT = 133.6;
+const TARGET_WEIGHT = 125;
+const DATE_DAYS = [3, 5, 6];
+
+const FOOD_DB = {
+  '白煮蛋(1个)':70,'煎蛋(1个)':90,'茶叶蛋(1个)':80,'包子(1个)':180,'馒头(1个)':220,
+  '花卷(1个)':200,'油条(1根)':270,'豆浆(1杯)':120,'牛奶(1杯)':150,'酸奶(1杯)':130,
+  '小米粥(1碗)':100,'白粥(1碗)':80,'燕麦片(1碗)':150,'全麦面包(1片)':80,
+  '玉米(1根)':150,'红薯(1个)':120,'小笼包(4个)':200,'煎饼果子(1个)':350,'馄饨(1碗)':250,
+  '米饭(1碗)':200,'糙米饭(1碗)':180,'面条(1碗)':250,'炒饭(1盘)':400,
+  '番茄炒蛋(1份)':150,'炒青菜(1份)':80,'清炒西兰花(1份)':90,
+  '鱼香肉丝(1份)':250,'宫保鸡丁(1份)':300,'麻婆豆腐(1份)':200,
+  '红烧肉(1份)':400,'糖醋排骨(1份)':350,'回锅肉(1份)':380,
+  '清蒸鱼(1块)':150,'水煮鱼(1份)':350,'酸菜鱼(1份)':300,
+  '白灼虾(10只)':100,'油焖大虾(1份)':250,'炒肉丝(1份)':200,
+  '青椒炒肉(1份)':220,'土豆丝(1份)':150,'醋溜白菜(1份)':70,
+  '地三鲜(1份)':250,'干煸四季豆(1份)':200,'红烧茄子(1份)':200,
+  '凉拌黄瓜(1份)':50,'紫菜蛋花汤(1碗)':60,'番茄蛋汤(1碗)':70,'排骨汤(1碗)':200,
+  '蛋糕(1块)':300,'奶茶(1杯)':350,'冰淇淋(1个)':200,'巧克力(1块)':100,
+  '饼干(5片)':200,'薯片(1包)':350,'辣条(1包)':250,'面包(1个)':250,
+  '布丁(1个)':150,'爆米花(1份)':300,'锅巴(1包)':280,'玉米泡(1包)':200,
+  '坚果(一小把)':150,'水果(1个苹果)':80,'香蕉(1根)':100,
+  '鸡胸肉(1块)':150,'牛肉(1份)':200,'豆腐(1块)':100,'三文鱼(1份)':200,
+};
+
+const SNACK_TRIGGERS = ['蛋糕','奶茶','冰淇淋','巧克力','薯片','辣条','饼干','玉米泡','锅巴','爆米花'];
+
+const COACH_MSGS = {
+  lose:['不错嘛！有在认真减哦！继续保持，老娘看好你！💅','哇塞！瘦了耶！是不是偷偷在厕所抠吐了？开玩笑的，你很棒！👏','哟～今天又瘦了，看来教官的恐吓还是有用的嘛～继续保持！😏','瘦了瘦了！！保持这个节奏，125斤在向你招手！💪','可以的，这位学员很有前途！🔥'],
+  maintain:['没瘦也没胖，这算什么？原地踏步是要当兵吗？明天给老娘动起来！😤','持平？夏令营不是让你来度假的！明天必须瘦！👊','没变化…行吧算你及格，但我要看到你的态度！🤨','持平=没进步=浪费一天！你的肥肉在嘲笑你！🗣️'],
+  gain1:['胖了一点点而已嘛～但胖了就是胖了！明天给我补回来！😠','你竟然还敢胖？！你的肉在开派对你知不知道！🎉'],
+  gain2:['连续胖了两天？！我看你是活腻了！明天再不瘦你就别来见我了！🔪','又胖了？？请问你现在是在执行"增肥计划"吗？！🤬'],
+  gain3plus:['我受不了了！你是来夏令营还是来养猪的？🐷','你已经胖了好几天了！我现在严重怀疑你偷偷在吃火锅！明天还胖就跑10公里！！🏃‍♂️💀','你成功激怒我了！你是我的重点观察对象！每天发运动视频！听到没有！！📹'],
+  snack:['今天怎么乱吃啦？！你是不是以为教官瞎了？！🍰➡️🚮','我看到你偷吃零食了！！！立刻放下！！🛑','吃零食？！你的意志力被狗吃了吗？！明天加倍运动！！😡']
+};
+
+let state = { records: [], coachHistory: [], calYear: 2026, calMonth: 5 };
+let selectedDate = null;
+
+// ===== API (with localStorage fallback) =====
+const LOCAL_KEY = 'fatLossCamp';
+let useLocalStorage = false;
+
+function loadLocalData() {
+  try {
+    const raw = localStorage.getItem(LOCAL_KEY);
+    return raw ? JSON.parse(raw) : { records: [], coachHistory: [] };
+  } catch { return { records: [], coachHistory: [] }; }
+}
+
+function saveLocalData(data) {
+  localStorage.setItem(LOCAL_KEY, JSON.stringify(data));
+}
+
+async function api(method, path, body) {
+  if (useLocalStorage) {
+    // Local mode
+    const local = loadLocalData();
+    if (path === 'records') {
+      if (method === 'GET') {
+        const date = body?.date;
+        if (date) return { success: true, data: local.records.find(r => r.date === date) || null };
+        return { success: true, data: local.records };
+      }
+      if (method === 'POST') {
+        const idx = local.records.findIndex(r => r.date === body.date);
+        if (idx >= 0) local.records[idx] = { ...local.records[idx], ...body };
+        else local.records.push(body);
+        saveLocalData(local);
+        return { success: true };
+      }
+    }
+    if (path === 'coach') {
+      if (method === 'GET') return { success: true, data: local.coachHistory };
+      if (method === 'POST') {
+        local.coachHistory.unshift(body);
+        saveLocalData(local);
+        return { success: true };
+      }
+    }
+    return { success: false };
+  }
+
+  // Cloud mode
+  try {
+    const opts = { method, headers: { 'Content-Type':'application/json' } };
+    if (body) opts.body = JSON.stringify(body);
+    const res = await fetch(`${API_BASE}/${path}`, opts);
+    if (!res.ok) throw new Error('API error');
+    return res.json();
+  } catch (e) {
+    console.warn('API unavailable, switching to localStorage mode');
+    useLocalStorage = true;
+    return api(method, path, body);
+  }
+}
+
+async function loadAll() {
+  const local = loadLocalData();
+  if (local.records.length > 0) {
+    // Try API first, fallback to local
+    try {
+      const res = await fetch(`${API_BASE}/records`);
+      if (res.ok) {
+        const data = await res.json();
+        state.records = data.data || [];
+        const coachRes = await fetch(`${API_BASE}/coach`);
+        if (coachRes.ok) {
+          const coachData = await coachRes.json();
+          state.coachHistory = coachData.data || [];
+        }
+        return;
+      }
+    } catch {}
+    // API failed, use local
+    useLocalStorage = true;
+    state.records = local.records;
+    state.coachHistory = local.coachHistory || [];
+    return;
+  }
+  // No local data, try API
+  try {
+    const [recRes, coachRes] = await Promise.all([
+      fetch(`${API_BASE}/records`).then(r=>r.json()),
+      fetch(`${API_BASE}/coach`).then(r=>r.json())
+    ]);
+    state.records = recRes.data || [];
+    state.coachHistory = coachRes.data || [];
+  } catch {
+    useLocalStorage = true;
+    state.records = [];
+    state.coachHistory = [];
+  }
+}
+
+// ===== Helpers =====
+function fmtDate(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function parseDate(str) { const [y,m,d]=str.split('-').map(Number); return new Date(y,m-1,d); }
+function daysBetween(d1,d2) { return Math.round((d2-d1)/(1000*60*60*24)); }
+function isDateDay(dateStr) { return DATE_DAYS.includes(parseDate(dateStr).getDay()); }
+function rand(arr) { return arr[Math.floor(Math.random()*arr.length)]; }
+function getRecord(dateStr) { return state.records.find(r => r.date === dateStr); }
+
+function getCoachMsg(change, consecutiveGain) {
+  if (change < 0) return rand(COACH_MSGS.lose);
+  if (change === 0) return rand(COACH_MSGS.maintain);
+  if (consecutiveGain >= 3) return rand(COACH_MSGS.gain3plus);
+  if (consecutiveGain >= 2) return rand(COACH_MSGS.gain2);
+  return rand(COACH_MSGS.gain1);
+}
+
+// ===== Calendar =====
+function renderCalendar() {
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+  document.getElementById('calMonthTitle').textContent = `${state.calYear}年${state.calMonth+1}月`;
+
+  const firstDay = new Date(state.calYear, state.calMonth, 1).getDay();
+  const daysInMonth = new Date(state.calYear, state.calMonth+1, 0).getDate();
+  const today = fmtDate(new Date());
+
+  const prevDays = new Date(state.calYear, state.calMonth, 0).getDate();
+  for (let i=firstDay-1; i>=0; i--) {
+    const d = document.createElement('div'); d.className='cal-day other-month';
+    d.innerHTML=`<span class="day-num">${prevDays-i}</span>`; grid.appendChild(d);
+  }
+
+  for (let day=1; day<=daysInMonth; day++) {
+    const dateStr = `${state.calYear}-${String(state.calMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const d = document.createElement('div'); d.className='cal-day';
+    if (dateStr === today) d.classList.add('today');
+    if (isDateDay(dateStr)) d.classList.add('date-mark');
+    const rec = getRecord(dateStr);
+    if (rec) {
+      d.classList.add('has-record');
+      const dot = document.createElement('div');
+      const w = parseFloat(rec.weight); const pw = parseFloat(rec.prev_weight);
+      dot.className = (w && pw && w < pw) ? 'dot green' : (w ? 'dot red' : '');
+      if (dot.className) d.appendChild(dot);
+    }
+    d.innerHTML += `<span class="day-num">${day}</span>`;
+    if (rec?.weight) d.innerHTML += `<span class="day-weight">${rec.weight}</span>`;
+    if (isDateDay(dateStr)) {
+      const h = document.createElement('span'); h.textContent='❤️';
+      h.style.cssText='position:absolute;bottom:2px;left:2px;font-size:8px;'; d.appendChild(h);
+    }
+    d.onclick = () => openDay(dateStr);
+    if (dateStr > END_DATE) { d.style.opacity='.3'; d.onclick=null; }
+    grid.appendChild(d);
+  }
+
+  const total = firstDay + daysInMonth;
+  const rem = (7 - total%7) % 7;
+  for (let i=1; i<=rem; i++) {
+    const d = document.createElement('div'); d.className='cal-day other-month';
+    d.innerHTML=`<span class="day-num">${i}</span>`; grid.appendChild(d);
+  }
+}
+
+function changeMonth(delta) {
+  state.calMonth += delta;
+  if (state.calMonth < 0) { state.calMonth=11; state.calYear--; }
+  if (state.calMonth > 11) { state.calMonth=0; state.calYear++; }
+  renderCalendar();
+}
+
+// ===== Modal =====
+function openDay(dateStr) {
+  selectedDate = dateStr;
+  const rec = getRecord(dateStr);
+  const d = parseDate(dateStr);
+  const wds = ['日','一','二','三','四','五','六'];
+  document.getElementById('modalDateTitle').textContent = `${dateStr} 周${wds[d.getDay()]}`;
+  document.getElementById('inputWeight').value = rec?.weight || '';
+
+  // Parse meals
+  let meals = {};
+  try { meals = rec?.meals ? (typeof rec.meals === 'string' ? JSON.parse(rec.meals) : rec.meals) : {}; } catch {}
+  ['breakfast','lunch','dinner','snack'].forEach(m => renderMealItems(m, meals[m] || []));
+  updateTotalCal();
+
+  // Snack check
+  checkSnackAlert(dateStr);
+
+  // Weight warning
+  checkWeightWarning(dateStr);
+
+  // Workouts
+  let workouts = [];
+  try { workouts = rec?.workouts ? (typeof rec.workouts === 'string' ? JSON.parse(rec.workouts) : rec.workouts) : []; } catch {}
+  renderWorkouts(workouts);
+  updateWorkoutSummary();
+
+  document.getElementById('inputNote').value = rec?.note || '';
+  document.getElementById('dayModal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('dayModal').classList.remove('show');
+  refresh();
+}
+
+// ===== Meals =====
+function renderMealItems(meal, items) {
+  const c = document.getElementById(`${meal}Items`); c.innerHTML = '';
+  items.forEach(i => addFoodRow(meal, i.name||'', i.calories||0));
+  if (!items.length) addFoodRow(meal, '', '');
+}
+function addFoodRow(meal, name, cal) {
+  const c = document.getElementById(`${meal}Items`);
+  const div = document.createElement('div'); div.className='meal-item';
+  div.innerHTML = `
+    <input type="text" class="food-name" placeholder="食物名称" value="${name}" oninput="updateMealCal('${meal}')">
+    <input type="number" class="cal-input" placeholder="卡" value="${cal}" oninput="updateMealCal('${meal}')" min="0">
+    <button class="del-btn" onclick="this.parentElement.remove();updateMealCal('${meal}')">×</button>`;
+  c.appendChild(div);
+}
+function addFoodItem(meal) { addFoodRow(meal,'',''); updateMealCal(meal); }
+function updateMealCal(meal) {
+  let t=0;
+  document.querySelectorAll(`#${meal}Items .meal-item`).forEach(r => {
+    t += parseFloat(r.querySelector('.cal-input')?.value) || 0;
+  });
+  document.getElementById(`${meal}Cal`).textContent = t;
+  updateTotalCal();
+}
+function updateTotalCal() {
+  let t=0; ['breakfast','lunch','dinner','snack'].forEach(m => { t+=parseFloat(document.getElementById(`${m}Cal`).textContent)||0; });
+  document.getElementById('totalCalories').textContent = t;
+}
+
+function checkSnackAlert(dateStr) {
+  const alert = document.getElementById('snackAlert'); alert.classList.remove('show');
+  const items = document.querySelectorAll('#snackItems .food-name');
+  let hasSnack = false;
+  items.forEach(inp => {
+    if (SNACK_TRIGGERS.some(t => inp.value.includes(t))) hasSnack = true;
+  });
+  if (hasSnack) {
+    document.getElementById('snackAlertMsg').textContent = rand(COACH_MSGS.snack);
+    alert.classList.add('show');
+  }
+}
+
+function checkWeightWarning(dateStr) {
+  const warn = document.getElementById('weightWarning'); warn.classList.remove('show');
+  const recs = state.records.filter(r => r.weight).sort((a,b) => a.date.localeCompare(b.date));
+  const idx = recs.findIndex(r => r.date === dateStr);
+  if (idx >= 2) {
+    const w0=parseFloat(recs[idx].weight), w1=parseFloat(recs[idx-1].weight), w2=parseFloat(recs[idx-2].weight);
+    if (w0>=w1 && w1>=w2) warn.classList.add('show');
+  }
+}
+
+// Quick food click
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('qf-btn')) {
+    const name = e.target.dataset.food, cal = e.target.dataset.cal, meal = e.target.dataset.meal;
+    addFoodRow(meal, name, cal); updateMealCal(meal);
+  }
+});
+
+// ===== Workouts =====
+function renderWorkouts(items) {
+  const c = document.getElementById('workoutContainer'); c.innerHTML = '';
+  items.forEach(i => addWorkoutRow(i.type||'cardio', i.name||'', i.duration||30));
+  if (!items.length) addWorkoutRow('cardio','',30);
+  updateWorkoutSummary();
+}
+function addWorkoutRow(type, name, dur) {
+  const c = document.getElementById('workoutContainer');
+  const div = document.createElement('div'); div.className='workout-item';
+  div.innerHTML = `
+    <select onchange="updateWorkoutSummary()">
+      <option value="cardio" ${type==='cardio'?'selected':''}>🏃 有氧</option>
+      <option value="strength" ${type==='strength'?'selected':''}>💪 无氧</option>
+    </select>
+    <input type="text" placeholder="项目" value="${name}" style="flex:1;" oninput="updateWorkoutSummary()">
+    <input type="number" value="${dur}" min="1" style="width:52px;" placeholder="min">
+    <button class="del-btn" onclick="this.parentElement.remove();updateWorkoutSummary()">×</button>`;
+  c.appendChild(div);
+}
+function addWorkoutItem() { addWorkoutRow('cardio','',30); updateWorkoutSummary(); }
+function updateWorkoutSummary() {
+  let c=0,s=0;
+  document.querySelectorAll('#workoutContainer .workout-item').forEach(r => {
+    if (r.querySelector('select').value === 'cardio') c++; else s++;
+  });
+  document.getElementById('woCardioCount').textContent = c;
+  document.getElementById('woStrengthCount').textContent = s;
+  const sum = document.getElementById('workoutSummary');
+  sum.style.display = (c>0||s>0) ? 'flex' : 'none';
+}
+
+// ===== Save =====
+function getMealData(meal) {
+  const items = [];
+  document.querySelectorAll(`#${meal}Items .meal-item`).forEach(r => {
+    const n = r.querySelector('.food-name')?.value?.trim();
+    const c = parseFloat(r.querySelector('.cal-input')?.value) || 0;
+    if (n) items.push({ name: n, calories: c });
+  });
+  return items;
+}
+
+async function saveDayRecord() {
+  const btn = document.getElementById('btnSave');
+  btn.disabled = true; btn.textContent = '⏳ 保存中...';
+
+  const date = selectedDate;
+  const weight = document.getElementById('inputWeight').value;
+  const note = document.getElementById('inputNote').value;
+  const totalCal = parseInt(document.getElementById('totalCalories').textContent) || 0;
+
+  const meals = {};
+  ['breakfast','lunch','dinner','snack'].forEach(m => { meals[m] = getMealData(m); });
+
+  const workouts = [];
+  document.querySelectorAll('#workoutContainer .workout-item').forEach(r => {
+    const type = r.querySelector('select').value;
+    const name = r.querySelector('input[type="text"]')?.value?.trim();
+    const dur = parseInt(r.querySelectorAll('input[type="number"]')[1]?.value) || 30;
+    if (name) workouts.push({ type, name, duration: dur });
+  });
+
+  const cardioCount = workouts.filter(w => w.type==='cardio').length;
+  const strengthCount = workouts.filter(w => w.type==='strength').length;
+
+  // Snack check
+  const snackNames = (meals.snack||[]).map(s=>s.name||'');
+  const hasJunkSnack = snackNames.some(n => SNACK_TRIGGERS.some(t => n.includes(t)));
+
+  // Coach review
+  const sortedRecs = state.records.filter(r=>r.weight).sort((a,b)=>a.date.localeCompare(b.date));
+  const idx = sortedRecs.findIndex(r => r.date === date);
+  let prevWeight = idx > 0 ? parseFloat(sortedRecs[idx-1].weight) : START_WEIGHT;
+  if (idx < 0 && sortedRecs.length > 0) { // new date
+    prevWeight = parseFloat(sortedRecs[sortedRecs.length-1].weight) || START_WEIGHT;
+  }
+
+  const w = parseFloat(weight);
+  let change = 0, consecGain = 0;
+  if (w && !isNaN(w)) {
+    change = w - prevWeight;
+    if (change > 0) {
+      for (let i=sortedRecs.length-1; i>=0; i--) {
+        const rw = parseFloat(sortedRecs[i].weight);
+        const pw = i>0 ? parseFloat(sortedRecs[i-1].weight) : START_WEIGHT;
+        if (rw && pw && rw > pw) consecGain++;
+        else break;
+      }
+      if (consecGain === 0 && change > 0) consecGain = 1;
+    }
+  }
+
+  let coachMsg = '', coachType = 'neutral';
+  if (w && !isNaN(w)) {
+    coachMsg = getCoachMsg(change, consecGain);
+    coachType = change < 0 ? 'happy' : change > 0 ? 'angry' : 'neutral';
+    if (hasJunkSnack) {
+      if (change < 0) { coachMsg = `虽然瘦了，但你以为吃零食这事就这么算了？！${rand(COACH_MSGS.snack)}`; coachType='warning'; }
+      else { coachMsg = `${rand(COACH_MSGS.snack)}\n\n还有，${coachMsg}`; coachType='angry'; }
+    }
+  }
+
+  const payload = {
+    date, weight: weight || null, meals, workouts, note,
+    totalCalories: totalCal, cardioCount, strengthCount,
+    hasJunkSnack, prevWeight,
+    coachReview: coachMsg || null,
+    coachReviewType: coachType
+  };
+
+  try {
+    await api('POST', 'records', payload);
+    if (coachMsg) {
+      await api('POST', 'coach', { date, msg: coachMsg, type: coachType });
+    }
+    closeModal();
+    alert('✅ 已保存！教官小S正在检查你的记录… 🔍');
+  } catch (e) {
+    alert('保存失败，请重试：'+e.message);
+  }
+
+  btn.disabled = false; btn.textContent = '💾 保存记录';
+}
+
+// ===== Banner =====
+function updateBanner() {
+  const now = new Date();
+  const target = parseDate(END_DATE);
+  document.getElementById('countdownNum').textContent = Math.max(0, daysBetween(now, target));
+
+  let latestW = START_WEIGHT;
+  const recs = state.records.filter(r=>r.weight).sort((a,b)=>b.date.localeCompare(a.date));
+  if (recs.length) latestW = parseFloat(recs[0].weight);
+  document.getElementById('currentWeight').textContent = latestW.toFixed(1);
+
+  const total = START_WEIGHT - TARGET_WEIGHT;
+  const lost = START_WEIGHT - latestW;
+  const pct = Math.min(1, Math.max(0, lost/total));
+  const c = 2 * Math.PI * 40;
+  const ring = document.getElementById('progressRing');
+  ring.style.strokeDasharray = c;
+  ring.style.strokeDashoffset = c * (1 - pct);
+}
+
+// ===== Stats =====
+function updateStats() {
+  const recs = state.records.filter(r=>r.weight).sort((a,b)=>a.date.localeCompare(b.date));
+  let latest = START_WEIGHT;
+  if (recs.length) latest = parseFloat(recs[recs.length-1].weight);
+  document.getElementById('statCurrentWeight').textContent = latest.toFixed(1);
+  const lost = START_WEIGHT - latest;
+  const remain = latest - TARGET_WEIGHT;
+  document.getElementById('statLost').textContent = lost>0 ? `-${lost.toFixed(1)} 斤 🎉` : `${lost.toFixed(1)} 斤`;
+  document.getElementById('statRemain').textContent = remain>0 ? `${remain.toFixed(1)} 斤` : '🎯 达标！';
+
+  let cardio=0, strength=0, workDays=new Set();
+  state.records.forEach(r => {
+    let ws = []; try { ws = typeof r.workouts==='string'?JSON.parse(r.workouts):r.workouts||[]; } catch {}
+    if (ws.length) { workDays.add(r.date); ws.forEach(w => { if(w.type==='cardio') cardio++; else strength++; }); }
+  });
+  document.getElementById('statCardio').textContent = cardio;
+  document.getElementById('statStrength').textContent = strength;
+  document.getElementById('statWorkoutDays').textContent = workDays.size;
+
+  // Week trend
+  const trend = document.getElementById('weekTrend');
+  const today = new Date();
+  const weekAgo = new Date(today); weekAgo.setDate(weekAgo.getDate()-7);
+  const weekRecs = recs.filter(r => { const d=parseDate(r.date); return d>=weekAgo && d<=today; });
+  if (!weekRecs.length) { trend.textContent = '本周还没有记录哦～'; return; }
+  let html = '<div style="display:flex;gap:6px;flex-wrap:wrap;">';
+  weekRecs.forEach(r => {
+    const d = parseDate(r.date);
+    const label = `${d.getMonth()+1}/${d.getDate()}`;
+    const pw = parseFloat(r.prev_weight) || START_WEIGHT;
+    const c = (parseFloat(r.weight) - pw).toFixed(1);
+    const color = parseFloat(c)<0 ? 'var(--green)' : parseFloat(c)>0 ? 'var(--red)' : '#999';
+    html += `<div style="text-align:center;min-width:60px;padding:6px;background:#f8f8f8;border-radius:8px;">
+      <div style="font-size:11px;color:#999;">${label}</div>
+      <div style="font-weight:700;font-size:15px;color:${color};">${r.weight}</div>
+      <div style="font-size:11px;color:${color};">${parseFloat(c)>0?'+':''}${c}</div></div>`;
+  });
+  html += '</div>';
+  trend.innerHTML = html;
+}
+
+// ===== Coach =====
+function updateCoach() {
+  const today = fmtDate(new Date());
+  const rec = getRecord(today);
+  if (rec?.coach_review) {
+    document.getElementById('coachMsg').textContent = rec.coach_review;
+  } else {
+    const sorted = state.records.filter(r=>r.coach_review).sort((a,b)=>b.date.localeCompare(a.date));
+    if (sorted.length) document.getElementById('coachMsg').textContent = `（上次评语 ${sorted[0].date}）\n${sorted[0].coach_review}`;
+  }
+
+  const hist = document.getElementById('coachHistory');
+  if (state.coachHistory.length) {
+    hist.innerHTML = state.coachHistory.slice(0,10).map(h => {
+      const emoji = h.type==='happy'?'🎉':h.type==='angry'?'😡':'😐';
+      return `<div style="margin-bottom:8px;padding:8px 12px;background:rgba(255,255,255,.05);border-radius:8px;">
+        <span style="font-size:11px;opacity:.5;">${h.date}</span>
+        <div style="margin-top:4px;">${emoji} ${h.msg}</div></div>`;
+    }).join('');
+  }
+}
+
+// ===== Tabs =====
+document.querySelectorAll('.tabs button').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    this.classList.add('active');
+    document.getElementById(`tab-${this.dataset.tab}`).classList.add('active');
+    if (this.dataset.tab==='stats') { document.getElementById('statsLoading').style.display='none'; document.getElementById('statsContent').style.display='block'; updateStats(); }
+    if (this.dataset.tab==='coach') { document.getElementById('coachLoading').style.display='none'; document.getElementById('coachContent').style.display='block'; updateCoach(); }
+  });
+});
+
+// ===== Quick Foods =====
+function renderQuickFoods() {
+  const c = document.getElementById('quickFoods');
+  Object.entries(FOOD_DB).forEach(([name, cal]) => {
+    const b = document.createElement('button'); b.className='qf-btn';
+    b.dataset.food = name; b.dataset.cal = cal;
+    const isSnack = SNACK_TRIGGERS.includes(name) || ['蛋糕','奶茶','冰淇淋','巧克力','薯片','辣条','饼干','玉米泡','锅巴','爆米花','布丁','坚果','水果'].some(t=>name.includes(t));
+    const isBreakfast = ['蛋','包','馒头','粥','豆浆','牛奶','麦片','面包'].some(t=>name.includes(t));
+    b.dataset.meal = isSnack ? 'snack' : isBreakfast ? 'breakfast' : 'lunch';
+    b.textContent = `${name} ${cal}卡`;
+    c.appendChild(b);
+  });
+}
+
+// ===== INIT =====
+async function refresh() {
+  await loadAll();
+  document.getElementById('calLoading').style.display = 'none';
+  document.getElementById('calContent').style.display = 'block';
+  renderCalendar();
+  updateBanner();
+  if (document.getElementById('tab-stats').classList.contains('active')) {
+    document.getElementById('statsLoading').style.display='none';
+    document.getElementById('statsContent').style.display='block';
+    updateStats();
+  }
+  if (document.getElementById('tab-coach').classList.contains('active')) {
+    document.getElementById('coachLoading').style.display='none';
+    document.getElementById('coachContent').style.display='block';
+    updateCoach();
+  }
+}
+
+function init() {
+  renderQuickFoods();
+  refresh();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
