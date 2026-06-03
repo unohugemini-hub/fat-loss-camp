@@ -313,7 +313,10 @@ function calcTDEE(bmr,factor){return bmr*factor}
 function kgFromJin(j){return parseFloat(j)/2||0}
 
 function calcWorkoutBurn(type,durationMin,weightKg){
-  const ex=EXERCISE_MET[type];if(!ex||!durationMin||!weightKg)return 0;
+  // Map old type names to EXERCISE_MET keys
+  const typeMap={'cardio':'brisk-walk','strength':'strength-mod','aerobic':'dancing','anaerobic':'strength-mod'};
+  const actualType=typeMap[type]||type;
+  const ex=EXERCISE_MET[actualType];if(!ex||!durationMin||!weightKg)return 0;
   return Math.round(weightKg*durationMin/60*ex.met*1.05);
 }
 
@@ -508,12 +511,16 @@ function addWorkoutRow(type,name,dur){
   c.appendChild(div);
 }
 function addWorkoutItem(){addWorkoutRow('walking','',30);updateWorkoutSummary()}
+function isCardioType(t){
+  const strengthTypes=['strength-light','strength-mod','yoga','pilates','stretch','strength'];
+  return !strengthTypes.includes(t);
+}
 function updateWorkoutSummary(){
   const w=parseFloat(document.getElementById('inputWeight').value)||START_WEIGHT;
   let c=0,s=0,burn=0;
   document.querySelectorAll('#workoutContainer .workout-item').forEach(r=>{
     const t=r.querySelector('select').value;const dur=parseInt(r.querySelector('input[type="number"]')?.value)||30;
-    if(t==='cardio'||(!EXERCISE_MET[t]?.label?.includes('力量')&&!['strength-light','strength-mod','yoga','pilates','stretch'].includes(t)))c++;else s++;
+    if(isCardioType(t))c++;else s++;
     const b=calcWorkoutBurn(t,dur,kgFromJin(w));
     burn+=b;
     const bl=r.querySelector('.burn-label');if(bl)bl.textContent=`${b}卡`;
@@ -565,7 +572,7 @@ async function saveDayRecord(){
     const dur=parseInt(r.querySelectorAll('input[type="number"]')[1]?.value)||30;
     workouts.push({type,name:EXERCISE_MET[type]?.label||type,duration:dur});
   });
-  const cardioCount=workouts.filter(w=>!['strength-light','strength-mod','yoga','pilates','stretch'].includes(w.type)).length;
+  const cardioCount=workouts.filter(w=>isCardioType(w.type)).length;
   const strengthCount=workouts.length-cardioCount;
   const snackNames=(meals.snack||[]).map(s=>s.name||'');
   const hasJunkSnack=snackNames.some(n=>SNACK_TRIGGERS.some(t=>n.includes(t)));
@@ -618,7 +625,7 @@ function updateStats(){
     <div class="stat-row"><span class="label">🏃 TDEE</span><span class="value">${Math.round(calcTDEE(calcBMR(kgFromJin(latest),SETTINGS.height,SETTINGS.age),SETTINGS.activityFactor))} 卡/天</span></div>
   </div>`;
   let cardio=0,strength=0,workDays=new Set(),totalBurn=0;
-  state.records.forEach(r=>{let ws=[];try{ws=parseObj(r.workouts,[])}catch{};if(ws.length){workDays.add(r.date);ws.forEach(w=>{if(['strength-light','strength-mod'].includes(w.type))strength++;else cardio++;totalBurn+=calcWorkoutBurn(w.type,w.duration||30,kgFromJin(parseFloat(r.weight)||START_WEIGHT))})}});
+  state.records.forEach(r=>{let ws=[];try{ws=parseObj(r.workouts,[])}catch{};if(ws.length){workDays.add(r.date);ws.forEach(w=>{if(isCardioType(w.type))cardio++;else strength++;totalBurn+=calcWorkoutBurn(w.type,w.duration||30,kgFromJin(parseFloat(r.weight)||START_WEIGHT))})}});
   html+=`<div class="stat-card"><h3>🏃 运动总览</h3>
     <div class="stat-row"><span class="label">有氧总次数</span><span class="value">${cardio}</span></div>
     <div class="stat-row"><span class="label">无氧总次数</span><span class="value">${strength}</span></div>
